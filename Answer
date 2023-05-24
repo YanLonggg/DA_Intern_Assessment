@@ -1,0 +1,103 @@
+#First I started off with importing the dataset into SQLightStudio
+#Creating a table with "socialdata"
+
+#I didn't include a primary key or constraint because of duplicating data and I need to keep them.
+
+CREATE TABLE socialdata (
+Published_Date TEXT,
+Account TEXT, 
+Account_Type TEXT, 
+Campaign_Name TEXT,
+Total_impressions INTEGER,
+Total_Engagements INTEGER,
+Media_Type TEXT )
+
+#1. What is the typical engagement rate we can expect? What’s the likelihood that we can
+achieve a 15% engagement rate?
+
+##To find engagement rate: 
+SELECT Account_Type, AVG(Total_Engagements) / AVG(Total_Impressions) AS average_engagement_rate
+FROM socialdata
+GROUP BY Account_Type;
+
+##What is the likelihood to achieve a 15% engagement rate? 
+FBPAGE	0.17807349168267
+INSTAGRAM	0.02352703187049
+LINKEDIN_COMPANY	0.01983598514053
+TIKTOK_BUSINESS	0.05481478037767
+TWITTER	0.03100207809033
+YOUTUBE	0.04332160249661
+## Out of all social media platform, Facebook is most likely to achieve a 15% engagement rate.
+
+
+#2. Does day of the week and time of posting affect engagement rates?
+##First I use this code to follow format of "MM-DD-YYYY HH:MM" To find DayofWeek and HourofDay
+SELECT 
+  CAST(strftime('%w', datetime(substr(Published_Date, 7, 4) || '-' || substr(Published_Date, 1, 2) || '-' || substr(Published_Date, 4, 2) || ' ' || substr(Published_Date, 12), 'localtime')) AS INTEGER) AS DayOfWeek,
+  CAST(strftime('%H', datetime(substr(Published_Date, 7, 4) || '-' || substr(Published_Date, 1, 2) || '-' || substr(Published_Date, 4, 2) || ' ' || substr(Published_Date, 12), 'localtime')) AS INTEGER) AS HourOfDay,
+  *
+FROM socialdata;
+
+## Then to find the day of the week and time that has the most engagement rate would be 
+SELECT 
+  DayOfWeek,
+  HourOfDay,
+  AVG(Total_Engagements * 1.0 / Total_Impressions) AS Average_Engagement_Rate
+FROM (
+  SELECT 
+    CAST(strftime('%w', datetime(substr(Published_Date, 7, 4) || '-' || substr(Published_Date, 1, 2) || '-' || substr(Published_Date, 4, 2) || ' ' || substr(Published_Date, 12), 'localtime')) AS INTEGER) AS DayOfWeek,
+    CAST(strftime('%H', datetime(substr(Published_Date, 7, 4) || '-' || substr(Published_Date, 1, 2) || '-' || substr(Published_Date, 4, 2) || ' ' || substr(Published_Date, 12), 'localtime')) AS INTEGER) AS HourOfDay,
+    Total_Engagements,
+    Total_Impressions
+  FROM socialdata
+) ;
+
+## 5(friday) at hour of the day : 15
+
+
+#3. How are our game titles doing in terms of social performance? Is there a specific game
+we should focus more on or less?
+
+## Finding total impressions and total engagement
+SELECT
+  Account,
+  SUM(Total_Impressions) AS Total_Impressions,
+  SUM(Total_Engagements) AS Total_Engagements
+FROM
+  socialdata
+WHERE
+  Account IN ('GeneraL', 'CSGO', 'DOTA2', 'Valorant', 'Content Creators')
+GROUP BY
+  Account;
+
+CSGO has highest Impressions and DOTA2 has highest Engagements 
+##Focusing on CSGO that has highest impressions to improve engagements can help out greatly. 
+##OR focusing on Valorant who has the lowest engagement and impressions can help out the brand greatly in the valorant community. 
+
+
+#4. What media type performs the best?
+
+SELECT Media_Type, AVG(Total_Engagements) AS AverageEngagements
+FROM socialdata
+GROUP BY Media_Type
+ORDER BY AverageEngagements DESC ; 
+#Mixed seem like the best media type, however, second best would be Photo
+
+
+#5. What is our best performing campaign?
+SELECT Campaign_Name, AVG(Total_Engagements) AS AverageEngagements
+FROM socialdata
+GROUP BY Campaign_Name
+ORDER BY AverageEngagements DESC ; 
+
+#Community Engagement
+
+#6. Define out a posting strategy for our social channels based on your discoveries.
+## Focusing on scheduling the company or game's post on Friday, in the afternoon, around 15:00 to leverage peak engagement time.
+## Since CSGO and DOTA2 has highest Engagement and Impression, posting CSGO and DOTA2 related content into the posting strategy. For example, updates, highlists, tournaments, and etc. Additionally, posting gifs and memes on your story can capitalize engagement rates.
+## Lastly, with campaign focus, the company can focus on giving back to the community with giveaways, poll, and interacting Q&A to enhance community involvement and interaction. 
+
+
+#7. What suggestions would you give to the social media team if they want to expand their
+presence (e.g. if our CSGO youtube channel is doing well should we expand to TikTok)?
+
