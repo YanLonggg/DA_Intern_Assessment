@@ -20,15 +20,15 @@ SELECT Account_Type, AVG(Total_Engagements) / AVG(Total_Impressions) AS average_
 FROM socialdata
 GROUP BY Account_Type;
 
-##What is the likelihood to achieve a 15% engagement rate? 
 FBPAGE	              0.17807349168267
 INSTAGRAM	            0.02352703187049
 LINKEDIN_COMPANY     	0.01983598514053
 TIKTOK_BUSINESS     	0.05481478037767
 TWITTER	              0.03100207809033
 YOUTUBE	              0.04332160249661
+##What is the likelihood to achieve a 15% engagement rate? 
 
-## Out of all social media platforms, Facebook is most likely to achieve a 15% engagement rate.
+Out of all social media platforms, Facebook is most likely to achieve a 15% engagement rate.
 
 
 #2. Does day of the week and time of posting affect engagement rates?
